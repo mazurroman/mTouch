@@ -3,9 +3,9 @@
 (function (w) {
     "use strict";
 
-    var handlers, settings, options, animations, helpers;
+    var options, helpers, handlers;
 
-    settings = {
+    options = {
 
         /**
          * Touch wrapper element class.
@@ -51,10 +51,8 @@
         allowedHandlerDirections: {
             'onNavigationSwipe': ['left', 'right'],
             'onOverthrowSwipe': ['up', 'down']
-        }
-    };
+        },
 
-    options = {
         /**
          * Pointer to Window object.
          * @type {Object}
@@ -105,7 +103,7 @@
          * This element will be `shifting` above the navigation element.
          * @type {[type]}
          */
-        contentWrapperElem: options.w.document.getElementById(settings.contentWrapperElem),
+        contentWrapperElem: options.w.document.getElementById(options.contentWrapperElem),
 
         /**
          * Intercept any throw in progress.
@@ -122,7 +120,7 @@
          */
         getTouchWrapper: function (target) {
             var tgt = target;
-            while (!(tgt.className && tgt.className.indexOf(settings.touchWrapperElem) > -1 && tgt)) {
+            while (!(tgt.className && tgt.className.indexOf(options.touchWrapperElem) > -1 && tgt)) {
                 if (tgt.parentNode === null) {
                     return tgt;
                 }
@@ -191,7 +189,7 @@
                     }
 
                     if (helpers.isAllowedDirection(swipeOpts.touchDirection,
-                            settings.allowedHandlerDirections[helpers.startingTouchHandlerName])) {
+                            options.allowedHandlerDirections[helpers.startingTouchHandlerName])) {
                         handler.touchMove(!helpers.touchInProgress, swipeOpts, touchWrapperElem, touchStartElem, touchMoveElem);
                     }
 
@@ -199,7 +197,7 @@
                 },
                 touchEnd: function (swipeOpts, touchWrapperElem, touchStartElem, touchMoveElem) {
                     if (helpers.isAllowedDirection(swipeOpts.touchDirection,
-                            settings.allowedHandlerDirections[helpers.startingTouchHandlerName])) {
+                            options.allowedHandlerDirections[helpers.startingTouchHandlerName])) {
                         handler.touchEnd(swipeOpts, touchWrapperElem, touchStartElem, touchMoveElem);
                     }
 
@@ -211,7 +209,7 @@
         }
     };
 
-    animations = {
+    handlers = {
         /**
          * Ease-out-cubic easing (http://www.robertpenner.com/easing_terms_of_use.html).
          * @param  {int} t current iteration
@@ -219,7 +217,7 @@
          * @param  {int} c end value
          * @param  {int} d total iterations
          */
-        eocEasing: function (t, b, c, d) {
+        _eocEasing: function (t, b, c, d) {
             return c * ((t = t / d - 1) * t * t + 1) + b;
         },
 
@@ -228,7 +226,7 @@
          * @param  {Element} elem The element to scroll
          * @param  {Object} opts Desired options to scroll
          */
-        overthrow: function (elem, opts) {
+        _overthrow: function (elem, opts) {
             var i = 0,
                 sTop = elem.scrollTop,
 
@@ -241,7 +239,7 @@
 
             helpers.timeKeeper = setInterval(function () {
                 if (i++ < o.duration) {
-                    elem.scrollTop = animations.eocEasing(i, sTop, o.top, o.duration);
+                    elem.scrollTop = handlers._eocEasing(i, sTop, o.top, o.duration);
                 } else {
                     if (endTop !== elem.scrollTop) {
                         elem.scrollTop = endTop;
@@ -257,7 +255,7 @@
          * @param  {HTMLElement} touchWrapper Element to scroll.
          * @param  {Function} cb Callback called after the end of scrolling.
          */
-        finishScroll: function (opts, touchWrapper) {
+        _finishScroll: function (opts, touchWrapper) {
             // Come up with a distance and duration based on how
             // Multipliers are tweaked to a comfortable balance across platforms
             var top = (opts.lastTops[0] - opts.lastTops[opts.lastTops.length - 1]) * 8,
@@ -266,7 +264,7 @@
 
             // Make sure there's a significant amount of throw involved, otherwise, just stay still
             if (!isNaN(duration) && duration > 0 && (topAbs > 80)) {
-                animations.overthrow(touchWrapper, { top: top, duration: duration });
+                handlers._overthrow(touchWrapper, { top: top, duration: duration });
             }
         },
 
@@ -274,26 +272,26 @@
          * Toggle content wrapper so the navigation is shown/hidden.
          * @param  {String} touchDirection
          */
-        toggleNavigation: function (touchDirection) {
+        _toggleNavigation: function (touchDirection) {
             helpers.timeKeeper = setInterval(function () {
                 if (touchDirection === 'right' &&
-                        helpers.curNavIndentation < settings.maxNavIndentation) {
+                        helpers.curNavIndentation < options.maxNavIndentation) {
 
                     // opening
-                    helpers.curNavIndentation += settings.indentationAnimationStep;
+                    helpers.curNavIndentation += options.indentationAnimationStep;
                     helpers.contentWrapperElem.style.left = helpers.curNavIndentation + 'px';
                 } else if (touchDirection === 'left' &&
                         helpers.curNavIndentation > 0) {
 
                     // closing
-                    helpers.curNavIndentation -= settings.indentationAnimationStep;
+                    helpers.curNavIndentation -= options.indentationAnimationStep;
                     helpers.contentWrapperElem.style.left = helpers.curNavIndentation + 'px';
                 } else {
                     // make sure we have not moven it too much
                     if (helpers.curNavIndentation < 0) {
                         helpers.curNavIndentation = 0;
-                    } else if (helpers.curNavIndentation > settings.maxNavIndentation) {
-                        helpers.curNavIndentation = settings.maxNavIndentation;
+                    } else if (helpers.curNavIndentation > options.maxNavIndentation) {
+                        helpers.curNavIndentation = options.maxNavIndentation;
                     }
                     helpers.contentWrapperElem.style.left = helpers.curNavIndentation + 'px';
 
@@ -301,10 +299,7 @@
                     helpers.interceptTimer();
                 }
             }, 1);
-        }
-    };
-
-    handlers = {
+        },
         /**
          * Special handler which is called on every touch start.
          */
@@ -317,9 +312,9 @@
          */
         onNavButtonClick: function () {
             if (helpers.curNavIndentation === 0) {
-                animations.toggleNavigation('right');
+                handlers._toggleNavigation('right');
             } else {
-                animations.toggleNavigation('left');
+                handlers._toggleNavigation('left');
             }
         },
 
@@ -354,7 +349,7 @@
                 moveNavigation(helpers.curNavIndentation);
             };
             onNavigationSwipe.touchEnd = function (swipeOpts) {
-                animations.toggleNavigation(swipeOpts.touchDirection);
+                handlers._toggleNavigation(swipeOpts.touchDirection);
                 if (helpers.curNavIndentation === 0) {
                     // navigation is closed
                     helpers.disableSwipeUp = false;
@@ -418,7 +413,7 @@
                 }
             };
             onOverthrowSwipe.touchEnd = function (swipeOpts, touchWrapperElem, touchStartElem, touchMoveElem) {
-                animations.finishScroll(overthrowOpts, touchWrapperElem);
+                handlers._finishScroll(overthrowOpts, touchWrapperElem);
                 initializeMe();
             };
 
@@ -451,7 +446,7 @@
             inputs,
             setPointers = function (val) {
                 var i, il;
-                inputs = settings.elemEventHandler.querySelectorAll("textarea, input");
+                inputs = options.elemEventHandler.querySelectorAll("textarea, input");
                 for (i = 0, il = inputs.length; i < il; i++) {
                     inputs[i].style.pointerEvents = val;
                 }
@@ -529,12 +524,12 @@
 
         if (options.docRecognizesTouches) {
             // Register touch listeners
-            settings.elemEventHandler.addEventListener('touchstart', touchStart, false);
-            settings.elemEventHandler.addEventListener('touchmove', touchMove, false);
-            settings.elemEventHandler.addEventListener('touchend', touchEnd, false);
+            options.elemEventHandler.addEventListener('touchstart', touchStart, false);
+            options.elemEventHandler.addEventListener('touchmove', touchMove, false);
+            options.elemEventHandler.addEventListener('touchend', touchEnd, false);
         }
 
-        navToggleBtn = options.doc.getElementById(settings.navigationToggleButton);
+        navToggleBtn = options.doc.getElementById(options.navigationToggleButton);
         navToggleBtn.addEventListener('click', onNavigationButtonClick, false);
 
     }(handlers.onTouchStart, handlers.onNavigationSwipe, handlers.onOverthrowSwipe, handlers.onNavigationSwipe, handlers.onOverthrowSwipe, handlers.onNavButtonClick));

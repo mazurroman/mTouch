@@ -1,4 +1,4 @@
- mTouch is licensed under the MIT license.
+mTouch is licensed under the MIT license.
 
 The MIT License (MIT)
 Copyright (c) 2013 Roman Mazur
