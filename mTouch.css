@@ -1,0 +1,28 @@
+html,
+body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+}
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* mTouch wrapper */
+.mt {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    overflow: hidden;
+}
+
+/* content header */
+.b-cnt-h {
+    height: 5%;
+}
+
+/* content */
+.b-cnt {
+    height: 95%;
+}

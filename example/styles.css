@@ -1,0 +1,36 @@
+/* content header */
+.b-cnt-h {
+    color: #fff;
+    background-color: green;
+}
+
+/* content */
+.b-cnt {
+    background: red;
+}
+
+/* content > sidebar */
+.b-cnt-s {
+    background: #2b2b2b;
+}
+
+/* navigation */
+.nav {
+    width: 550px;
+    color: #f2f2f2;
+}
+.nav > ul {
+    margin: 0;
+    padding: 0;
+}
+.nav-item {
+    margin: 0;
+    list-style: none;
+    display: block;
+    border-bottom: 1px solid black;
+    padding: .5em;
+}
+.nav-item-link {
+    color: #fff;
+    text-decoration: none;
+}
