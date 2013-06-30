@@ -1,3 +1,5 @@
+**WARGING!** This library is not completed and needs to finish the implementation. It works, but is not usable much.
+
 # mTouch #
 
 Lightweight, pure JavaScript library for mobile touch applications. It's main task is to enable `overflow: auto` and side navigation menu a.k.a *Facebook app navigation*.
